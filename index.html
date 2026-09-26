@@ -66,7 +66,7 @@
 }
 
 * { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
+html { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
 body {
   margin: 0;
   background: var(--bg);
@@ -166,6 +166,11 @@ main { padding-block: 18px 48px; display: grid; gap: 18px; }
 .field { display: grid; gap: 6px; }
 
 input[type="text"], input[type="date"], select {
+  -webkit-appearance: none;
+  appearance: none;
+  font-size: 16px;
+  display: block;
+  text-align: left;
   width: 100%;
   background: var(--surface-2);
   border: 1px solid var(--line);
@@ -174,6 +179,8 @@ input[type="text"], input[type="date"], select {
   min-height: 44px;
 }
 input::placeholder { color: var(--muted); }
+input[type="date"]::-webkit-date-and-time-value { text-align: left; }
+button { -webkit-appearance: none; appearance: none; touch-action: manipulation; }
 
 .btn {
   border: 1px solid var(--line);
@@ -281,8 +288,11 @@ input::placeholder { color: var(--muted); }
   border-radius: 12px;
   background: var(--surface-2);
 }
-.person .name { flex: 1; font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
-.person .meta { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.person .id { flex: 1; min-width: 0; display: grid; gap: 1px; }
+.person .name { font-weight: 600; overflow-wrap: break-word; }
+.person .meta { color: var(--muted); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.person .acts { display: flex; gap: 4px; flex: none; }
+.person input[type="text"] { flex: 1; min-width: 0; }
 .person.archived .name { color: var(--muted); text-decoration: line-through; }
 .person input[type="text"] { min-height: 36px; padding: 6px 10px; }
 
@@ -305,8 +315,8 @@ input::placeholder { color: var(--muted); }
   background: var(--surface-2);
   overflow: hidden;
 }
-.rank summary {
-  list-style: none;
+.rank summary { list-style: none; cursor: pointer; display: block; }
+.rank .line {
   display: grid;
   grid-template-columns: 28px 1fr auto;
   gap: 12px;
@@ -380,6 +390,8 @@ input::placeholder { color: var(--muted); }
   .rank-detail { padding-left: 14px; }
   .trip { grid-template-columns: 52px 1fr; }
   .trip-actions { grid-column: 2; }
+  .panel { padding: 16px 14px; }
+  .person { padding-left: 12px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
@@ -435,7 +447,7 @@ input::placeholder { color: var(--muted); }
 
       <div class="field">
         <label class="label" for="trip-note">Nota (facoltativa)</label>
-        <input type="text" id="trip-note" maxlength="80" placeholder="Es. Navigli, Corso Como, compleanno di Giulia">
+        <input type="text" id="trip-note" maxlength="80" placeholder="Es. Navigli, Corso Como">
       </div>
 
       <div class="row">
@@ -798,10 +810,11 @@ input::placeholder { color: var(--muted); }
           <button type="button" class="btn small ghost" data-rename-cancel>Annulla</button></div>`;
       }
       return `<div class="person ${p.archived ? "archived" : ""}">
-        <span class="name">${esc(p.name)}</span>
-        <span class="meta">${n} ${n === 1 ? "guida" : "guide"}</span>
-        <button type="button" class="btn small ghost" data-rename="${esc(p.id)}">Rinomina</button>
-        <button type="button" class="btn small ghost" data-archive="${esc(p.id)}">${p.archived ? "Riattiva" : "Archivia"}</button>
+        <span class="id"><span class="name">${esc(p.name)}</span><span class="meta">${n} ${n === 1 ? "guida" : "guide"}</span></span>
+        <span class="acts">
+          <button type="button" class="btn small ghost" data-rename="${esc(p.id)}">Rinomina</button>
+          <button type="button" class="btn small ghost" data-archive="${esc(p.id)}">${p.archived ? "Riattiva" : "Archivia"}</button>
+        </span>
       </div>`;
     }).join("");
   }
@@ -926,7 +939,7 @@ input::placeholder { color: var(--muted); }
       if (r.drives !== prev) { pos = i + 1; prev = r.drives; }
       const archived = map[r.id] && map[r.id].archived;
       return `<details class="rank">
-        <summary>
+        <summary><span class="line">
           <span class="pos">${pos}</span>
           <span class="who">
             <b>${esc(nameOf(r.id, map))}${archived ? ' <span class="hint">(archiviato)</span>' : ""}</b>
@@ -934,7 +947,7 @@ input::placeholder { color: var(--muted); }
             <span class="sub">${r.carried} ${r.carried === 1 ? "persona portata" : "persone portate"} · ${r.rides} ${r.rides === 1 ? "passaggio ricevuto" : "passaggi ricevuti"}</span>
           </span>
           <span class="count"><b>${r.drives}</b><small>${r.drives === 1 ? "guida" : "guide"}</small></span>
-        </summary>
+        </span></summary>
         <div class="rank-detail">
           <div><span class="label">Ha portato</span>${chipList(r.carriedWho)}</div>
           <div><span class="label">Si è fatto portare da</span>${chipList(r.riddenWith)}</div>

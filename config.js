@@ -14,5 +14,12 @@ window.INDEBITATI_CONFIG = {
   //   projectId: "indebitaticars",
   //   appId: "1:1234567890:web:abcdef",
   // },
-  firebase: null,
+  firebase: {
+    apiKey: "AIzaSyCpMDrBVx-8MYwqcAXzUpQBOYoe28mwhoM",
+    authDomain: "indebitaticars-af3ec.firebaseapp.com",
+    projectId: "indebitaticars-af3ec",
+    storageBucket: "indebitaticars-af3ec.firebasestorage.app",
+    messagingSenderId: "612840657724",
+    appId: "1:612840657724:web:30bb9ba18d54968b8a4439",
+  },
 };

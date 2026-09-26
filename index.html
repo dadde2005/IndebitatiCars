@@ -1,0 +1,977 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#16202E">
+<title>IndebitatiCars</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..900&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+:root {
+  --bg: #EDF0F4;
+  --surface: #FFFFFF;
+  --surface-2: #F5F7FA;
+  --ink: #16202E;
+  --muted: #5B6676;
+  --line: #D6DBE2;
+  --accent: #E08A2E;
+  --accent-soft: #FBE9D4;
+  --accent-ink: #8F4E0B;
+  --on-accent: #1B1206;
+  --danger: #B3372B;
+  --danger-soft: #F8E1DE;
+  --good: #2F7A4F;
+  --shadow: 0 1px 2px rgba(22, 32, 46, .06), 0 4px 16px rgba(22, 32, 46, .05);
+  --radius: 14px;
+  --display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0E141D;
+    --surface: #161F2C;
+    --surface-2: #1C2736;
+    --ink: #E7EBF1;
+    --muted: #96A2B3;
+    --line: #2A3546;
+    --accent: #F0A04B;
+    --accent-soft: #3A2A17;
+    --accent-ink: #F6BD7C;
+    --on-accent: #1B1206;
+    --danger: #F0877B;
+    --danger-soft: #3B1F1C;
+    --good: #7CCB9A;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0E141D;
+  --surface: #161F2C;
+  --surface-2: #1C2736;
+  --ink: #E7EBF1;
+  --muted: #96A2B3;
+  --line: #2A3546;
+  --accent: #F0A04B;
+  --accent-soft: #3A2A17;
+  --accent-ink: #F6BD7C;
+  --on-accent: #1B1206;
+  --danger: #F0877B;
+  --danger-soft: #3B1F1C;
+  --good: #7CCB9A;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3);
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.5 var(--body);
+  min-height: 100vh;
+}
+[hidden] { display: none !important; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.wrap { max-width: 760px; margin: 0 auto; padding-inline: 16px; }
+
+/* Header */
+.top {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 10;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+.brand { min-width: 0;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding-block: 14px 10px;
+}
+.brand h1 {
+  margin: 0;
+  font-family: var(--display);
+  font-stretch: 78%;
+  font-weight: 850;
+  font-size: 26px;
+  letter-spacing: -.01em;
+  line-height: 1;
+}
+.brand h1 span { color: var(--accent-ink); }
+.brand small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+.mode {
+  flex: none;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.mode[data-kind="shared"] { color: var(--good); border-color: currentColor; }
+.tabs { display: flex; gap: 4px; padding-block: 0 10px; }
+.tab {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  padding: 9px 6px;
+  border-radius: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+.tab[aria-selected="true"] { background: var(--ink); color: var(--bg); }
+
+main { padding-block: 18px 48px; display: grid; gap: 18px; }
+
+/* Panels */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+}
+.panel h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-stretch: 82%;
+  font-weight: 800;
+  font-size: 20px;
+  text-wrap: balance;
+}
+.panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.hint { margin: 0; color: var(--muted); font-size: 13.5px; }
+.label {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.field { display: grid; gap: 6px; }
+
+input[type="text"], input[type="date"], select {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  min-height: 44px;
+}
+input::placeholder { color: var(--muted); }
+
+.btn {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 10px 16px;
+  min-height: 44px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.btn.primary:hover { filter: brightness(1.05); }
+.btn.primary:disabled { opacity: .45; cursor: not-allowed; filter: none; }
+.btn.ghost { background: transparent; }
+.btn.danger { color: var(--danger); }
+.btn.small { min-height: 34px; padding: 6px 10px; font-size: 13.5px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.row > .grow { flex: 1 1 180px; }
+
+/* Person chips */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  border-radius: 999px;
+  padding: 7px 13px;
+  min-height: 38px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+.chip:hover { border-color: var(--muted); }
+.chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.chip.driver[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.chip:disabled { opacity: .35; cursor: not-allowed; }
+
+/* Seats */
+.seats { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.seat-row { display: flex; gap: 5px; }
+.seat {
+  width: 22px; height: 26px;
+  border-radius: 7px 7px 4px 4px;
+  border: 2px solid var(--line);
+  background: transparent;
+}
+.seat.on { background: var(--ink); border-color: var(--ink); }
+.seat.wheel { background: var(--accent); border-color: var(--accent); }
+.seat.extra { background: var(--danger); border-color: var(--danger); }
+.seats-text { font-size: 13.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.seats-text.over { color: var(--danger); font-weight: 600; }
+
+/* Trips list */
+.month { display: grid; gap: 8px; }
+.month + .month { margin-top: 8px; }
+.trip {
+  display: grid;
+  grid-template-columns: 58px 1fr auto;
+  gap: 12px;
+  align-items: start;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-2);
+}
+.date-tile {
+  text-align: center;
+  border-radius: 9px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 5px 0 6px;
+  line-height: 1.05;
+}
+.date-tile .dow { font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink); }
+.date-tile .day { font-family: var(--display); font-weight: 850; font-size: 24px; font-variant-numeric: tabular-nums; }
+.date-tile .mon { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.trip-main { display: grid; gap: 4px; min-width: 0; }
+.trip-driver { font-weight: 700; }
+.trip-driver .tag {
+  display: inline-block;
+  font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  background: var(--accent-soft); color: var(--accent-ink);
+  padding: 2px 7px; border-radius: 999px; margin-left: 6px; vertical-align: 2px;
+}
+.trip-pass { color: var(--muted); font-size: 14px; overflow-wrap: anywhere; }
+.trip-note { font-size: 13px; color: var(--muted); font-style: italic; }
+.trip-actions { display: flex; gap: 4px; }
+.confirm-bar {
+  grid-column: 1 / -1;
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  background: var(--danger-soft);
+  border-radius: 9px;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+.confirm-bar span { flex: 1 1 160px; }
+
+/* People */
+.people { display: grid; gap: 8px; }
+.person {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-2);
+}
+.person .name { flex: 1; font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+.person .meta { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.person.archived .name { color: var(--muted); text-decoration: line-through; }
+.person input[type="text"] { min-height: 36px; padding: 6px 10px; }
+
+/* Report */
+.filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.filters .chip { min-height: 32px; padding: 4px 12px; font-size: 13.5px; }
+.suggest {
+  display: flex; gap: 12px; align-items: center;
+  background: var(--accent-soft);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+.suggest .who { font-family: var(--display); font-stretch: 80%; font-weight: 850; font-size: 22px; line-height: 1.1; }
+.suggest p { margin: 2px 0 0; font-size: 13px; color: var(--accent-ink); }
+.suggest .label { color: var(--accent-ink); }
+.board { display: grid; gap: 8px; }
+.rank {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.rank summary {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  cursor: pointer;
+}
+.rank summary::-webkit-details-marker { display: none; }
+.rank .pos { font-family: var(--display); font-weight: 800; color: var(--muted); font-variant-numeric: tabular-nums; text-align: center; }
+.rank .who { display: grid; gap: 5px; min-width: 0; }
+.rank .who b { font-size: 16px; overflow-wrap: anywhere; }
+.rank .sub { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.bar { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+.count { text-align: right; line-height: 1; }
+.count b {
+  display: block;
+  font-family: var(--display);
+  font-stretch: 75%;
+  font-weight: 900;
+  font-size: 34px;
+  font-variant-numeric: tabular-nums;
+}
+.count small { font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.rank-detail {
+  border-top: 1px dashed var(--line);
+  padding: 10px 14px 14px 54px;
+  display: grid; gap: 10px;
+  font-size: 14px;
+}
+.rank-detail .label { display: block; margin-bottom: 4px; }
+.mini-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.mini-chips span {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 999px; padding: 2px 10px; font-size: 13px; font-variant-numeric: tabular-nums;
+}
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.stat { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+.stat b { display: block; font-family: var(--display); font-weight: 850; font-size: 24px; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.stat span { font-size: 12px; color: var(--muted); }
+
+.empty {
+  text-align: center;
+  padding: 26px 12px;
+  color: var(--muted);
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  display: grid; gap: 10px; justify-items: center;
+}
+.empty p { margin: 0; max-width: 38ch; }
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--bg);
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  box-shadow: var(--shadow);
+  z-index: 50;
+  max-width: calc(100% - 32px);
+}
+.toast.err { background: var(--danger); color: #fff; }
+
+@media (max-width: 480px) {
+  .stats { grid-template-columns: repeat(3, 1fr); }
+  .stat b { font-size: 20px; }
+  .rank-detail { padding-left: 14px; }
+  .trip { grid-template-columns: 52px 1fr; }
+  .trip-actions { grid-column: 2; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <div>
+        <h1>Indebitati<span>Cars</span></h1>
+        <small>Chi guida stasera verso Milano?</small>
+      </div>
+      <span class="mode" id="mode" data-kind="loading">Connessione…</span>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tab-uscite" data-view="uscite" aria-selected="true">Uscite</button>
+      <button class="tab" role="tab" id="tab-persone" data-view="persone" aria-selected="false">Persone</button>
+      <button class="tab" role="tab" id="tab-resoconti" data-view="resoconti" aria-selected="false">Resoconti</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- USCITE -->
+  <section id="view-uscite" class="view" style="display:grid;gap:18px">
+    <form class="panel" id="trip-form" autocomplete="off">
+      <div class="panel-head">
+        <h2 id="trip-form-title">Nuova uscita</h2>
+        <button type="button" class="btn ghost small" id="trip-cancel" hidden>Annulla modifica</button>
+      </div>
+
+      <div class="field">
+        <label class="label" for="trip-date">Data</label>
+        <input type="date" id="trip-date" required>
+      </div>
+
+      <div class="field">
+        <span class="label" id="driver-label">Chi ha guidato</span>
+        <div class="chips" id="driver-chips" role="radiogroup" aria-labelledby="driver-label"></div>
+      </div>
+
+      <div class="field">
+        <span class="label" id="pass-label">Chi ha portato</span>
+        <div class="chips" id="pass-chips" aria-labelledby="pass-label"></div>
+      </div>
+
+      <div class="seats" aria-live="polite">
+        <div class="seat-row" id="seat-row"></div>
+        <span class="seats-text" id="seats-text"></span>
+      </div>
+
+      <div class="field">
+        <label class="label" for="trip-note">Nota (facoltativa)</label>
+        <input type="text" id="trip-note" maxlength="80" placeholder="Es. Navigli, Corso Como, compleanno di Giulia">
+      </div>
+
+      <div class="row">
+        <button class="btn primary" id="trip-save" type="submit">Salva uscita</button>
+      </div>
+    </form>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Storico</h2>
+        <span class="hint" id="trip-count"></span>
+      </div>
+      <div id="trip-list"></div>
+    </section>
+  </section>
+
+  <!-- PERSONE -->
+  <section id="view-persone" class="view" hidden style="display:grid;gap:18px">
+    <form class="panel" id="person-form" autocomplete="off">
+      <h2>Il gruppo</h2>
+      <p class="hint">Aggiungi chi esce con voi. Chi non esce più si può archiviare: il suo storico resta nei resoconti.</p>
+      <div class="row">
+        <input class="grow" type="text" id="person-name" maxlength="40" placeholder="Nome, es. Marco" aria-label="Nome della persona">
+        <button class="btn primary" type="submit">Aggiungi</button>
+      </div>
+      <div class="people" id="people-list"></div>
+    </form>
+  </section>
+
+  <!-- RESOCONTI -->
+  <section id="view-resoconti" class="view" hidden style="display:grid;gap:18px">
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Resoconti</h2>
+        <div class="filters" id="period-filters" role="group" aria-label="Periodo"></div>
+      </div>
+      <div class="stats" id="stats"></div>
+      <div id="suggest"></div>
+      <div class="board" id="board"></div>
+      <p class="hint">Tocca un nome per vedere chi ha portato e con chi è andato.</p>
+    </section>
+  </section>
+
+</main>
+
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script src="config.js" onerror="void 0"></script>
+<script>
+(() => {
+  "use strict";
+
+  /* ---------- helpers ---------- */
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2, 10)).replace(/-/g, "");
+  const SEATS = 4; // posti passeggero in una macchina normale
+  const DOW = ["dom", "lun", "mar", "mer", "gio", "ven", "sab"];
+  const MON = ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"];
+  const MON_FULL = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
+  const parseDate = (iso) => { const [y, m, d] = iso.split("-").map(Number); return new Date(y, m - 1, d); };
+  const todayIso = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+
+  let toastTimer;
+  function toast(msg, isErr) {
+    const t = $("#toast");
+    t.textContent = msg;
+    t.classList.toggle("err", !!isErr);
+    t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => (t.hidden = true), isErr ? 4500 : 2200);
+  }
+
+  /* ---------- storage backends ----------
+     Each backend exposes: subscribe(cb) -> cb({people, trips}),
+     putPerson(p), putTrip(t), deleteTrip(id).
+     1. Claude artifact db (when opened as a claude.ai artifact)
+     2. Firebase Firestore (when config.js provides a firebase config)
+     3. localStorage (single device fallback) */
+
+  function localBackend() {
+    const KEY = "indebitaticars:v1";
+    const read = () => {
+      try { return JSON.parse(localStorage.getItem(KEY)) || { people: {}, trips: {} }; }
+      catch { return { people: {}, trips: {} }; }
+    };
+    const write = (s) => { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {} };
+    let listener = () => {};
+    const emit = () => { const s = read(); listener({ people: Object.values(s.people), trips: Object.values(s.trips) }); };
+    window.addEventListener("storage", (e) => { if (e.key === KEY) emit(); });
+    return {
+      kind: "local",
+      subscribe(cb) { listener = cb; emit(); },
+      async putPerson(p) { const s = read(); s.people[p.id] = p; write(s); emit(); },
+      async putTrip(t) { const s = read(); s.trips[t.id] = t; write(s); emit(); },
+      async deleteTrip(id) { const s = read(); delete s.trips[id]; write(s); emit(); },
+    };
+  }
+
+  function claudeBackend(db) {
+    const strip = ({ id, ...rest }) => rest;
+    return {
+      kind: "shared",
+      subscribe(cb) {
+        let people = [], trips = [], gotP = false, gotT = false;
+        const push = () => { if (gotP && gotT) cb({ people, trips }); };
+        const onErr = (e) => toast("Sincronizzazione interrotta: ricarica la pagina (" + e.code + ")", true);
+        db.collection("people").onSnapshot((s) => { people = s.docs.map((d) => ({ id: d.id, ...d.data() })); gotP = true; push(); }, onErr);
+        db.collection("trips").onSnapshot((s) => { trips = s.docs.map((d) => ({ id: d.id, ...d.data() })); gotT = true; push(); }, onErr);
+      },
+      putPerson: (p) => db.collection("people").doc(p.id).set(strip(p)),
+      putTrip: (t) => db.collection("trips").doc(t.id).set(strip(t)),
+      deleteTrip: (id) => db.collection("trips").doc(id).delete(),
+    };
+  }
+
+  async function firebaseBackend(cfg) {
+    const V = "10.12.2";
+    const base = `https://www.gstatic.com/firebasejs/${V}/`;
+    const [{ initializeApp }, fs, au] = await Promise.all([
+      import(base + "firebase-app.js"),
+      import(base + "firebase-firestore.js"),
+      import(base + "firebase-auth.js"),
+    ]);
+    const app = initializeApp(cfg.firebase);
+    try { await au.signInAnonymously(au.getAuth(app)); } catch (e) { console.warn("Accesso anonimo non disponibile:", e.code || e); }
+    const db = fs.getFirestore(app);
+    const group = cfg.group || "default";
+    const col = (name) => fs.collection(db, "groups", group, name);
+    const strip = ({ id, ...rest }) => rest;
+    return {
+      kind: "shared",
+      subscribe(cb) {
+        let people = [], trips = [], gotP = false, gotT = false;
+        const push = () => { if (gotP && gotT) cb({ people, trips }); };
+        const onErr = (e) => toast("Errore di sincronizzazione: " + (e.code || e.message), true);
+        fs.onSnapshot(col("people"), (s) => { people = s.docs.map((d) => ({ id: d.id, ...d.data() })); gotP = true; push(); }, onErr);
+        fs.onSnapshot(col("trips"), (s) => { trips = s.docs.map((d) => ({ id: d.id, ...d.data() })); gotT = true; push(); }, onErr);
+      },
+      putPerson: (p) => fs.setDoc(fs.doc(col("people"), p.id), strip(p)),
+      putTrip: (t) => fs.setDoc(fs.doc(col("trips"), t.id), strip(t)),
+      deleteTrip: (id) => fs.deleteDoc(fs.doc(col("trips"), id)),
+    };
+  }
+
+  async function pickBackend() {
+    if (window.claude && typeof window.claude.use === "function") {
+      try { const db = await window.claude.use("db"); if (db) return claudeBackend(db); } catch {}
+    }
+    const cfg = window.INDEBITATI_CONFIG;
+    if (cfg && cfg.firebase && cfg.firebase.projectId) {
+      try { return await firebaseBackend(cfg); }
+      catch (e) { console.error(e); toast("Firebase non raggiungibile: uso i dati di questo dispositivo", true); }
+    }
+    return localBackend();
+  }
+
+  /* ---------- state ---------- */
+  const state = {
+    people: [],
+    trips: [],
+    view: "uscite",
+    draft: { id: null, date: todayIso(), driverId: null, passengerIds: [], note: "" },
+    confirmDelete: null,
+    editingPerson: null,
+    period: "all",
+  };
+  let store;
+
+  const byId = () => Object.fromEntries(state.people.map((p) => [p.id, p]));
+  const activePeople = () => state.people.filter((p) => !p.archived).sort((a, b) => a.name.localeCompare(b.name, "it"));
+  const nameOf = (id, map) => (map[id] ? map[id].name : "Persona rimossa");
+
+  /* ---------- tabs ---------- */
+  function setView(v) {
+    state.view = v;
+    document.querySelectorAll(".tab").forEach((t) => t.setAttribute("aria-selected", String(t.dataset.view === v)));
+    document.querySelectorAll(".view").forEach((s) => (s.hidden = s.id !== "view-" + v));
+    try { localStorage.setItem("indebitaticars:view", v); } catch {}
+    render();
+  }
+  document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => setView(t.dataset.view)));
+
+  /* ---------- trip form ---------- */
+  function renderTripForm() {
+    const d = state.draft;
+    const people = activePeople();
+    // include archived people already in the trip being edited
+    const map = byId();
+    const extra = [d.driverId, ...d.passengerIds].filter((id) => id && map[id] && map[id].archived).map((id) => map[id]);
+    const list = [...people, ...extra.filter((p, i, a) => a.indexOf(p) === i)];
+
+    $("#trip-date").value = d.date;
+    $("#trip-note").value = d.note;
+    $("#trip-form-title").textContent = d.id ? "Modifica uscita" : "Nuova uscita";
+    $("#trip-cancel").hidden = !d.id;
+    $("#trip-save").textContent = d.id ? "Salva modifiche" : "Salva uscita";
+
+    if (!list.length) {
+      const empty = `<div class="empty" style="width:100%"><p>Prima aggiungi le persone del gruppo.</p><button type="button" class="btn small" data-goto="persone">Vai a Persone</button></div>`;
+      $("#driver-chips").innerHTML = empty;
+      $("#pass-chips").innerHTML = "";
+    } else {
+      $("#driver-chips").innerHTML = list.map((p) =>
+        `<button type="button" class="chip driver" role="radio" data-driver="${esc(p.id)}" aria-pressed="${d.driverId === p.id}" aria-checked="${d.driverId === p.id}">${esc(p.name)}</button>`).join("");
+      $("#pass-chips").innerHTML = list.map((p) =>
+        `<button type="button" class="chip" data-pass="${esc(p.id)}" aria-pressed="${d.passengerIds.includes(p.id)}" ${p.id === d.driverId ? "disabled" : ""}>${esc(p.name)}</button>`).join("");
+    }
+
+    const n = d.passengerIds.length;
+    const seats = [`<span class="seat ${d.driverId ? "wheel" : ""}" title="Guidatore"></span>`];
+    for (let i = 0; i < Math.max(SEATS, n); i++) seats.push(`<span class="seat ${i < n ? (i < SEATS ? "on" : "extra") : ""}"></span>`);
+    $("#seat-row").innerHTML = seats.join("");
+    const st = $("#seats-text");
+    st.classList.toggle("over", n > SEATS);
+    st.textContent = !d.driverId ? "Scegli chi ha guidato"
+      : n > SEATS ? `${n} passeggeri: più dei ${SEATS} posti di una macchina normale`
+      : `${n} di ${SEATS} posti passeggero occupati`;
+    $("#trip-save").disabled = !d.driverId || !d.date;
+  }
+
+  $("#trip-form").addEventListener("click", (e) => {
+    const drv = e.target.closest("[data-driver]");
+    const pas = e.target.closest("[data-pass]");
+    const go = e.target.closest("[data-goto]");
+    const d = state.draft;
+    if (drv) {
+      const id = drv.dataset.driver;
+      d.driverId = d.driverId === id ? null : id;
+      d.passengerIds = d.passengerIds.filter((p) => p !== d.driverId);
+      renderTripForm();
+    } else if (pas) {
+      const id = pas.dataset.pass;
+      d.passengerIds = d.passengerIds.includes(id) ? d.passengerIds.filter((p) => p !== id) : [...d.passengerIds, id];
+      renderTripForm();
+    } else if (go) {
+      setView(go.dataset.goto);
+    }
+  });
+  $("#trip-date").addEventListener("change", (e) => (state.draft.date = e.target.value, renderTripForm()));
+  $("#trip-note").addEventListener("input", (e) => (state.draft.note = e.target.value));
+  $("#trip-cancel").addEventListener("click", () => { resetDraft(); renderTripForm(); });
+
+  function resetDraft(keepDate) {
+    state.draft = { id: null, date: keepDate || todayIso(), driverId: null, passengerIds: [], note: "" };
+  }
+
+  $("#trip-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const d = state.draft;
+    if (!store || !d.driverId || !d.date) return;
+    const existing = d.id && state.trips.find((t) => t.id === d.id);
+    const trip = {
+      id: d.id || uid(),
+      date: d.date,
+      driverId: d.driverId,
+      passengerIds: d.passengerIds.filter((p) => p !== d.driverId),
+      note: d.note.trim(),
+      createdAt: existing ? existing.createdAt || Date.now() : Date.now(),
+      updatedAt: Date.now(),
+    };
+    const btn = $("#trip-save");
+    btn.disabled = true;
+    try {
+      await store.putTrip(trip);
+      toast(d.id ? "Uscita aggiornata" : "Uscita salvata");
+      resetDraft(d.date);
+    } catch (err) {
+      toast(writeError(err), true);
+    }
+    render();
+  });
+
+  function writeError(err) {
+    const code = err && err.code;
+    if (code === "invalid_argument" || code === "permission-denied") return "Non hai i permessi per modificare i dati condivisi.";
+    if (code === "quota_exceeded") return "Spazio esaurito: elimina qualche uscita vecchia.";
+    return "Salvataggio non riuscito, riprova tra poco.";
+  }
+
+  /* ---------- trip list ---------- */
+  function renderTrips() {
+    const map = byId();
+    const trips = [...state.trips].sort((a, b) => (b.date.localeCompare(a.date)) || ((b.createdAt || 0) - (a.createdAt || 0)));
+    $("#trip-count").textContent = trips.length ? `${trips.length} ${trips.length === 1 ? "uscita" : "uscite"}` : "";
+    if (!trips.length) {
+      $("#trip-list").innerHTML = `<div class="empty"><p>Nessuna uscita registrata. Segna la prima qui sopra: data, chi ha guidato e chi ha portato.</p></div>`;
+      return;
+    }
+    const groups = [];
+    for (const t of trips) {
+      const key = t.date.slice(0, 7);
+      if (!groups.length || groups[groups.length - 1].key !== key) groups.push({ key, items: [] });
+      groups[groups.length - 1].items.push(t);
+    }
+    $("#trip-list").innerHTML = groups.map((g) => {
+      const [y, m] = g.key.split("-").map(Number);
+      return `<div class="month"><span class="label">${MON_FULL[m - 1]} ${y}</span>` + g.items.map((t) => {
+        const dt = parseDate(t.date);
+        const pass = (t.passengerIds || []).map((id) => esc(nameOf(id, map)));
+        const confirming = state.confirmDelete === t.id;
+        return `<article class="trip">
+          <div class="date-tile" aria-label="${esc(t.date)}"><div class="dow">${DOW[dt.getDay()]}</div><div class="day">${dt.getDate()}</div><div class="mon">${MON[dt.getMonth()]}</div></div>
+          <div class="trip-main">
+            <div class="trip-driver">${esc(nameOf(t.driverId, map))}<span class="tag">al volante</span></div>
+            <div class="trip-pass">${pass.length ? `Ha portato ${pass.length === 1 ? "" : pass.length + ": "}${pass.join(", ")}` : "Da solo/a"}</div>
+            ${t.note ? `<div class="trip-note">${esc(t.note)}</div>` : ""}
+          </div>
+          <div class="trip-actions">
+            <button type="button" class="btn ghost small" data-edit="${esc(t.id)}">Modifica</button>
+            <button type="button" class="btn ghost small danger" data-del="${esc(t.id)}" aria-label="Elimina">Elimina</button>
+          </div>
+          ${confirming ? `<div class="confirm-bar"><span>Eliminare questa uscita?</span><button type="button" class="btn small danger" data-del-yes="${esc(t.id)}">Elimina</button><button type="button" class="btn small ghost" data-del-no>Annulla</button></div>` : ""}
+        </article>`;
+      }).join("") + `</div>`;
+    }).join("");
+  }
+
+  $("#trip-list").addEventListener("click", async (e) => {
+    const ed = e.target.closest("[data-edit]");
+    const del = e.target.closest("[data-del]");
+    const yes = e.target.closest("[data-del-yes]");
+    const no = e.target.closest("[data-del-no]");
+    if (ed) {
+      const t = state.trips.find((x) => x.id === ed.dataset.edit);
+      if (!t) return;
+      state.draft = { id: t.id, date: t.date, driverId: t.driverId, passengerIds: [...(t.passengerIds || [])], note: t.note || "" };
+      renderTripForm();
+      $("#trip-form").scrollIntoView({ behavior: "smooth", block: "start" });
+    } else if (del) {
+      state.confirmDelete = del.dataset.del; renderTrips();
+    } else if (no) {
+      state.confirmDelete = null; renderTrips();
+    } else if (yes) {
+      const id = yes.dataset.delYes;
+      state.confirmDelete = null;
+      try {
+        await store.deleteTrip(id);
+        if (state.draft.id === id) resetDraft();
+        toast("Uscita eliminata");
+      } catch (err) { toast(writeError(err), true); }
+      render();
+    }
+  });
+
+  /* ---------- people ---------- */
+  function renderPeople() {
+    const drives = {};
+    state.trips.forEach((t) => (drives[t.driverId] = (drives[t.driverId] || 0) + 1));
+    const all = [...state.people].sort((a, b) => (!!a.archived - !!b.archived) || a.name.localeCompare(b.name, "it"));
+    if (!all.length) {
+      $("#people-list").innerHTML = `<div class="empty"><p>Il gruppo è vuoto. Scrivi un nome e premi Aggiungi, una persona alla volta.</p></div>`;
+      return;
+    }
+    $("#people-list").innerHTML = all.map((p) => {
+      const n = drives[p.id] || 0;
+      if (state.editingPerson === p.id) {
+        return `<div class="person"><input type="text" id="rename-${esc(p.id)}" value="${esc(p.name)}" maxlength="40" aria-label="Nuovo nome">
+          <button type="button" class="btn small primary" data-rename-save="${esc(p.id)}">Salva</button>
+          <button type="button" class="btn small ghost" data-rename-cancel>Annulla</button></div>`;
+      }
+      return `<div class="person ${p.archived ? "archived" : ""}">
+        <span class="name">${esc(p.name)}</span>
+        <span class="meta">${n} ${n === 1 ? "guida" : "guide"}</span>
+        <button type="button" class="btn small ghost" data-rename="${esc(p.id)}">Rinomina</button>
+        <button type="button" class="btn small ghost" data-archive="${esc(p.id)}">${p.archived ? "Riattiva" : "Archivia"}</button>
+      </div>`;
+    }).join("");
+  }
+
+  $("#person-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!store) return;
+    const input = $("#person-name");
+    const name = input.value.trim().replace(/\s+/g, " ");
+    if (!name) return;
+    const dup = state.people.find((p) => p.name.toLowerCase() === name.toLowerCase());
+    if (dup) {
+      if (dup.archived) { await savePerson({ ...dup, archived: false }, `${dup.name} è di nuovo nel gruppo`); input.value = ""; }
+      else toast(`${dup.name} è già nel gruppo`, true);
+      return;
+    }
+    await savePerson({ id: uid(), name, archived: false, createdAt: Date.now() }, `${name} aggiunto al gruppo`);
+    input.value = "";
+    input.focus();
+  });
+
+  async function savePerson(p, msg) {
+    if (!store) return;
+    try { await store.putPerson(p); if (msg) toast(msg); }
+    catch (err) { toast(writeError(err), true); }
+    render();
+  }
+
+  $("#people-list").addEventListener("click", async (e) => {
+    const ren = e.target.closest("[data-rename]");
+    const save = e.target.closest("[data-rename-save]");
+    const cancel = e.target.closest("[data-rename-cancel]");
+    const arch = e.target.closest("[data-archive]");
+    if (ren) {
+      state.editingPerson = ren.dataset.rename; renderPeople();
+      const el = document.getElementById("rename-" + ren.dataset.rename); if (el) { el.focus(); el.select(); }
+    } else if (cancel) {
+      state.editingPerson = null; renderPeople();
+    } else if (save) {
+      const id = save.dataset.renameSave;
+      const p = state.people.find((x) => x.id === id);
+      const val = document.getElementById("rename-" + id).value.trim().replace(/\s+/g, " ");
+      state.editingPerson = null;
+      if (p && val && val !== p.name) await savePerson({ ...p, name: val }, "Nome aggiornato");
+      else renderPeople();
+    } else if (arch) {
+      const p = state.people.find((x) => x.id === arch.dataset.archive);
+      if (p) await savePerson({ ...p, archived: !p.archived }, p.archived ? `${p.name} è di nuovo nel gruppo` : `${p.name} archiviato`);
+    }
+  });
+  $("#people-list").addEventListener("keydown", (e) => {
+    if (e.target.id && e.target.id.startsWith("rename-") && e.key === "Enter") {
+      e.preventDefault();
+      const btn = document.querySelector(`[data-rename-save="${e.target.id.slice(7)}"]`);
+      if (btn) btn.click();
+    }
+  });
+
+  /* ---------- reports ---------- */
+  function periodTrips() {
+    const p = state.period;
+    if (p === "all") return state.trips;
+    return state.trips.filter((t) => t.date.startsWith(p));
+  }
+
+  function renderReport() {
+    const years = [...new Set(state.trips.map((t) => t.date.slice(0, 4)))].sort().reverse();
+    if (state.period !== "all" && !years.includes(state.period)) state.period = "all";
+    $("#period-filters").innerHTML = [["all", "Sempre"], ...years.map((y) => [y, y])].map(([k, l]) =>
+      `<button type="button" class="chip" data-period="${k}" aria-pressed="${state.period === k}">${l}</button>`).join("");
+
+    const trips = periodTrips();
+    const map = byId();
+    const nights = new Set(trips.map((t) => t.date)).size;
+    const carried = trips.reduce((s, t) => s + (t.passengerIds || []).length, 0);
+    $("#stats").innerHTML = `
+      <div class="stat"><b>${nights}</b><span>${nights === 1 ? "serata" : "serate"}</span></div>
+      <div class="stat"><b>${trips.length}</b><span>${trips.length === 1 ? "macchina usata" : "macchine usate"}</span></div>
+      <div class="stat"><b>${trips.length ? (carried / trips.length).toFixed(1).replace(".", ",") : "0"}</b><span>passeggeri a viaggio</span></div>`;
+
+    const rows = {};
+    const ensure = (id) => (rows[id] ||= { id, drives: 0, carried: 0, rides: 0, carriedWho: {}, riddenWith: {} });
+    activePeople().forEach((p) => ensure(p.id));
+    for (const t of trips) {
+      const r = ensure(t.driverId);
+      r.drives++;
+      for (const pid of t.passengerIds || []) {
+        r.carried++;
+        r.carriedWho[pid] = (r.carriedWho[pid] || 0) + 1;
+        const q = ensure(pid);
+        q.rides++;
+        q.riddenWith[t.driverId] = (q.riddenWith[t.driverId] || 0) + 1;
+      }
+    }
+    const list = Object.values(rows).sort((a, b) => b.drives - a.drives || b.carried - a.carried || nameOf(a.id, map).localeCompare(nameOf(b.id, map), "it"));
+    const max = Math.max(1, ...list.map((r) => r.drives));
+
+    // who should drive next: active person with the lowest share of drives over nights out
+    const cands = list.filter((r) => map[r.id] && !map[r.id].archived && r.drives + r.rides > 0);
+    if (cands.length >= 2) {
+      const share = (r) => r.drives / (r.drives + r.rides);
+      const next = [...cands].sort((a, b) => share(a) - share(b) || b.rides - a.rides)[0];
+      $("#suggest").innerHTML = `<div class="suggest"><div>
+        <span class="label">Prossimo turno suggerito</span>
+        <div class="who">${esc(nameOf(next.id, map))}</div>
+        <p>Ha guidato ${next.drives} ${next.drives === 1 ? "volta" : "volte"} e si è fatto portare ${next.rides} ${next.rides === 1 ? "volta" : "volte"}.</p>
+      </div></div>`;
+    } else {
+      $("#suggest").innerHTML = "";
+    }
+
+    if (!list.length) {
+      $("#board").innerHTML = `<div class="empty"><p>Qui compare la classifica di chi ha preso la macchina, appena registrate la prima uscita.</p></div>`;
+      return;
+    }
+    const chipList = (obj) => {
+      const e = Object.entries(obj).sort((a, b) => b[1] - a[1]);
+      return e.length ? `<div class="mini-chips">${e.map(([id, n]) => `<span>${esc(nameOf(id, map))} ×${n}</span>`).join("")}</div>` : `<span class="hint">Nessuno</span>`;
+    };
+    let pos = 0, prev = null;
+    $("#board").innerHTML = list.map((r, i) => {
+      if (r.drives !== prev) { pos = i + 1; prev = r.drives; }
+      const archived = map[r.id] && map[r.id].archived;
+      return `<details class="rank">
+        <summary>
+          <span class="pos">${pos}</span>
+          <span class="who">
+            <b>${esc(nameOf(r.id, map))}${archived ? ' <span class="hint">(archiviato)</span>' : ""}</b>
+            <span class="bar"><i style="width:${(r.drives / max) * 100}%"></i></span>
+            <span class="sub">${r.carried} ${r.carried === 1 ? "persona portata" : "persone portate"} · ${r.rides} ${r.rides === 1 ? "passaggio ricevuto" : "passaggi ricevuti"}</span>
+          </span>
+          <span class="count"><b>${r.drives}</b><small>${r.drives === 1 ? "guida" : "guide"}</small></span>
+        </summary>
+        <div class="rank-detail">
+          <div><span class="label">Ha portato</span>${chipList(r.carriedWho)}</div>
+          <div><span class="label">Si è fatto portare da</span>${chipList(r.riddenWith)}</div>
+        </div>
+      </details>`;
+    }).join("");
+  }
+
+  $("#period-filters").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-period]");
+    if (b) { state.period = b.dataset.period; renderReport(); }
+  });
+
+  /* ---------- render ---------- */
+  function render() {
+    if (state.view === "uscite") { renderTripForm(); renderTrips(); }
+    else if (state.view === "persone") renderPeople();
+    else renderReport();
+  }
+
+  /* ---------- boot ---------- */
+  try { const v = localStorage.getItem("indebitaticars:view"); if (v && document.getElementById("view-" + v)) state.view = v; } catch {}
+  setView(state.view);
+
+  pickBackend().then((b) => {
+    store = b;
+    const m = $("#mode");
+    m.dataset.kind = b.kind;
+    m.textContent = b.kind === "shared" ? "Condiviso" : "Non condiviso";
+    m.title = b.kind === "shared" ? "I dati sono sincronizzati tra tutti i dispositivi" : "I dati restano in questo browser. Configura Firebase per condividerli (vedi README).";
+    b.subscribe(({ people, trips }) => {
+      state.people = people.filter((p) => p && p.name);
+      state.trips = trips.filter((t) => t && t.date && t.driverId);
+      render();
+    });
+  });
+})();
+</script>
+</body>
+</html>
